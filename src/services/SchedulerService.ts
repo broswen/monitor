@@ -15,6 +15,7 @@ export default class SchedulerService {
   // schedule a function based on the MonitorItem config
   scheduleMonitorItem(item: MonitorItem) {
     const job = new CronJob(item.schedule, async function () {
+      const now = new Date()
       console.log(item)
     }, null, true)
     this.scheduledItems.set(item.id, job)
