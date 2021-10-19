@@ -5,6 +5,7 @@ import { CronCommand, CronJob } from "cron";
 import axios, { Axios, AxiosError, AxiosResponse, Method } from "axios"
 import IMonitorHistoryItem from "../models/IMonitoryHistoryItem";
 import IMonitorRepository from "../models/IMonitorRepository";
+import IEmailNotificationService from "./IEmailNotificationService";
 
 // schedules cron jobs to monitor monitoritems
 
@@ -12,9 +13,11 @@ export default class SchedulerService {
   // map to hold monitor item id to cron job object
   scheduledItems: Map<string, CronJob>
   repository: IMonitorRepository
-  constructor(repository: IMonitorRepository) {
+  emailNotifier: IEmailNotificationService
+  constructor(repository: IMonitorRepository, emailNotifier: IEmailNotificationService) {
     this.scheduledItems = new Map()
     this.repository = repository
+    this.emailNotifier = emailNotifier
   }
 
   createMonitorFunction(item: IMonitorItem): Function {
@@ -48,6 +51,28 @@ export default class SchedulerService {
       } catch (error) {
         console.error(error)
       }
+
+      // if result was a failure, send notifications
+      if (monitorHistoryItem.failure) {
+        // if email alert is enabled and emails are specified, send notifications
+        if (item.emailAlert && item.emails.length > 0) {
+          try {
+            this.emailNotifier.sendNotification(item.emails, monitorHistoryItem)
+          } catch (error) {
+            console.error(error)
+          }
+        }
+        // // if sms alert is enabled and phone numbers are specified, send notifications
+        // if (item.smsAlert && item.phoneNumbers.length > 0) {
+        //   try {
+        //     this.smsNotifier.sendNotification(item.phoneNumbers, monitorHistoryItem)
+        //   } catch (error) {
+        //     console.error(error)
+        //   }
+        // }
+
+      }
+
     }
   }
 

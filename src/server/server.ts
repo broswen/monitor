@@ -6,11 +6,18 @@ import { createRepository } from "../repository/MonitorRepository";
 import { createMonitorItem, deleteMonitorItem, getMonitorItem, getMonitorItemHistory, getMonitorItems, updateMonitorItem } from "../routes/routes";
 import SchedulerService from "../services/SchedulerService";
 import { body, param, validationResult } from 'express-validator';
+import ISmsNotificationService from "../services/ISmsNotificationService copy";
+import TwilioNotificationService from "../services/TwilioNotificationService";
+import IEmailNotificationService from "../services/IEmailNotificationService";
+import SendGridNotificationService from "../services/SendGridNotificationService";
+import dotenv from "dotenv"
+dotenv.config()
 
 const app: express.Application = express()
 
 const repository: IMonitorRepository = createRepository("memory")
-const scheduler: SchedulerService = new SchedulerService(repository)
+const emailNotifier: IEmailNotificationService = new SendGridNotificationService()
+const scheduler: SchedulerService = new SchedulerService(repository, emailNotifier)
 
 // health check, ping database to check connection
 app.get("/healthz", (req: express.Request, res: express.Response) => {
