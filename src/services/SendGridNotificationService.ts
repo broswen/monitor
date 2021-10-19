@@ -1,7 +1,7 @@
 "use strict";
 
 import IMonitorItem from "../models/IMonitorItem";
-import IMonitorHistoryItem from "../models/IMonitoryHistoryItem";
+import IMonitorEvent from "../models/IMonitorEvent";
 import IEmailNotificationService from "./IEmailNotificationService";
 
 import sgMail from "@sendgrid/mail"
@@ -13,13 +13,17 @@ export default class SendGridNotificationService implements IEmailNotificationSe
     sgMail.setApiKey(config.sendgrid_api_key)
   }
 
-  async sendNotification(emails: string[], event: IMonitorHistoryItem) {
+  async sendNotification(emails: string[], event: IMonitorEvent) {
     const msg = {
       to: emails,
       from: config.noreply_email,
       subject: `Monitor Error: ${event.endpoint}`,
-      text: `Monitoring Failure:\n${event.timestamp.toISOString()}\n ${event.endpoint}: ${event.status} ${event.statusText}`,
-      html: `Monitoring Failure:\n${event.timestamp.toISOString()}\n ${event.endpoint}: ${event.status} ${event.statusText}`,
+      text: `Monitoring Failure:
+      ${event.timestamp.toISOString()}
+      ${event.endpoint}: ${event.status} ${event.statusText}`,
+      html: `Monitoring Failure:
+      ${event.timestamp.toISOString()}
+      ${event.endpoint}: ${event.status} ${event.statusText}`,
     }
     try {
       await sgMail.send(msg)

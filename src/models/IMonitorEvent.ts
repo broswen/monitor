@@ -1,4 +1,4 @@
-export default interface IMonitorHistoryItem {
+export default interface IMonitorEvent {
   itemId: string
   id: string
   endpoint: string

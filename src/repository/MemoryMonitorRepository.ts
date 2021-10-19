@@ -1,13 +1,13 @@
 "use strict";
 
-import IMonitorHistoryItem from "../models/IMonitoryHistoryItem";
+import IMonitorEvent from "../models/IMonitorEvent";
 import IMonitorItem from "../models/IMonitorItem";
 import MonitorRepository from "../models/IMonitorRepository";
 
 
 export default class MemoryMonitorRepository implements MonitorRepository {
   items: Map<string, IMonitorItem>
-  history: Map<string, IMonitorHistoryItem[]>
+  history: Map<string, IMonitorEvent[]>
   constructor() {
     this.items = new Map()
     this.history = new Map()
@@ -35,7 +35,7 @@ export default class MemoryMonitorRepository implements MonitorRepository {
     }
     return item
   }
-  getMonitorHistory(id: string): IMonitorHistoryItem[] {
+  getMonitorHistory(id: string): IMonitorEvent[] {
     const item = this.getMonitorItem(id)
     const history = this.history.get(id)
     if (history === undefined) {
@@ -44,7 +44,7 @@ export default class MemoryMonitorRepository implements MonitorRepository {
     return history
   }
 
-  addMonitorHistoryItem(item: IMonitorHistoryItem): IMonitorHistoryItem {
+  addMonitorHistoryEvent(item: IMonitorEvent): IMonitorEvent {
     this.history.get(item.itemId)?.push(item)
     return item
   }

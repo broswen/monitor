@@ -1,7 +1,7 @@
 "use strict";
 
-import IMonitorHistoryItem from "../models/IMonitoryHistoryItem";
+import IMonitorEvent from "../models/IMonitorEvent";
 
 export default interface IEmailNotificationService {
-  sendNotification(emails: string[], event: IMonitorHistoryItem): Promise<void>
+  sendNotification(emails: string[], event: IMonitorEvent): Promise<void>
 }

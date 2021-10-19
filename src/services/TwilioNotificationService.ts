@@ -1,7 +1,7 @@
 "use strict";
 
-import IMonitorHistoryItem from "../models/IMonitoryHistoryItem";
-import ISmsNotificationService from "./ISmsNotificationService copy";
+import IMonitorEvent from "../models/IMonitorEvent";
+import ISmsNotificationService from "./ISmsNotificationService";
 
 export default class TwilioNotificationService implements ISmsNotificationService {
 
@@ -9,6 +9,6 @@ export default class TwilioNotificationService implements ISmsNotificationServic
 
   }
 
-  async sendNotification(phoneNumbers: string[], event: IMonitorHistoryItem) {
+  async sendNotification(phoneNumbers: string[], event: IMonitorEvent) {
   }
 }

@@ -1,6 +1,6 @@
 "use strict";
 
-import IMonitorHistoryItem from "../models/IMonitoryHistoryItem";
+import IMonitorEvent from "../models/IMonitorEvent";
 import IMonitorItem from "../models/IMonitorItem";
 import MonitorRepository from "../models/IMonitorRepository";
 
@@ -19,10 +19,10 @@ export default class MongoMonitorRepository implements MonitorRepository {
   saveMonitorItem(item: IMonitorItem): IMonitorItem {
     throw new Error("Method not implemented.");
   }
-  getMonitorHistory(id: string): IMonitorHistoryItem[] {
+  getMonitorHistory(id: string): IMonitorEvent[] {
     throw new Error("Method not implemented.");
   }
-  addMonitorHistoryItem(item: IMonitorHistoryItem): IMonitorHistoryItem {
+  addMonitorHistoryEvent(item: IMonitorEvent): IMonitorEvent {
     throw new Error("Method not implemented.");
   }
   getMonitorItems(limit: number, offset: number): IMonitorItem[] {

@@ -3,7 +3,7 @@
 import IMonitorItem from "../models/IMonitorItem";
 import { CronCommand, CronJob } from "cron";
 import axios, { Axios, AxiosError, AxiosResponse, Method } from "axios"
-import IMonitorHistoryItem from "../models/IMonitoryHistoryItem";
+import IMonitorEvent from "../models/IMonitorEvent";
 import IMonitorRepository from "../models/IMonitorRepository";
 import IEmailNotificationService from "./IEmailNotificationService";
 
@@ -24,7 +24,7 @@ export default class SchedulerService {
     return async () => {
       let response: AxiosResponse
       const now = new Date()
-      let monitorHistoryItem: IMonitorHistoryItem = { id: "", itemId: item.id, timestamp: now, endpoint: item.endpoint, method: item.method, status: 0, statusText: "", failure: false }
+      let monitorHistoryItem: IMonitorEvent = { id: "", itemId: item.id, timestamp: now, endpoint: item.endpoint, method: item.method, status: 0, statusText: "", failure: false }
       try {
         response = await axios.request({
           url: item.endpoint,
@@ -47,7 +47,7 @@ export default class SchedulerService {
       }
       console.log(JSON.stringify(monitorHistoryItem))
       try {
-        this.repository.addMonitorHistoryItem(monitorHistoryItem)
+        this.repository.addMonitorHistoryEvent(monitorHistoryItem)
       } catch (error) {
         console.error(error)
       }
