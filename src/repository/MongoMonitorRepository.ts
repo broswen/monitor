@@ -9,6 +9,7 @@ export default class MongoMonitorRepository implements MonitorRepository {
   constructor() {
 
   }
+
   getMonitorItem(id: string): IMonitorItem {
     throw new Error("Method not implemented.");
   }
@@ -21,7 +22,13 @@ export default class MongoMonitorRepository implements MonitorRepository {
   getMonitorHistory(id: string): IMonitorHistoryItem[] {
     throw new Error("Method not implemented.");
   }
+  addMonitorHistoryItem(item: IMonitorHistoryItem): IMonitorHistoryItem {
+    throw new Error("Method not implemented.");
+  }
   getMonitorItems(limit: number, offset: number): IMonitorItem[] {
+    throw new Error("Method not implemented.");
+  }
+  ping(): boolean {
     throw new Error("Method not implemented.");
   }
 }

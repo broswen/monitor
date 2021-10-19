@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@sendgrid/mail": "^7.4.7",
+    "axios": "^0.23.0",
     "cron": "^1.8.2",
     "express": "^4.17.1",
     "mongodb": "^4.1.3",

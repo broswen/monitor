@@ -1,8 +1,11 @@
-export default interface MonitorHistoryItem {
+export default interface IMonitorHistoryItem {
   itemId: string
   id: string
+  endpoint: string
   timestamp: Date
   failure: boolean
-  responseCode: number
+  status: number
+  statusText: string
+  method: string
   responseBody?: string
 }

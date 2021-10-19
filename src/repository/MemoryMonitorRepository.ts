@@ -12,6 +12,7 @@ export default class MemoryMonitorRepository implements MonitorRepository {
     this.items = new Map()
     this.history = new Map()
   }
+
   getMonitorItem(id: string): IMonitorItem {
     const item = this.items.get(id)
     if (item === undefined) {
@@ -43,7 +44,16 @@ export default class MemoryMonitorRepository implements MonitorRepository {
     return history
   }
 
+  addMonitorHistoryItem(item: IMonitorHistoryItem): IMonitorHistoryItem {
+    this.history.get(item.itemId)?.push(item)
+    return item
+  }
+
   getMonitorItems(limit: number, offset: number): IMonitorItem[] {
     return Array.from(this.items.values())
+  }
+
+  ping(): boolean {
+    return true
   }
 }
