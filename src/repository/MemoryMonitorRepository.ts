@@ -50,7 +50,7 @@ export default class MemoryMonitorRepository implements MonitorRepository {
   }
 
   getMonitorItems(limit: number, offset: number): IMonitorItem[] {
-    return Array.from(this.items.values())
+    return Array.from(this.items.values()).slice(offset, limit)
   }
 
   ping(): boolean {

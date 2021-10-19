@@ -1,9 +1,11 @@
 "use strict";
 import express from "express"
+import { validationResult } from "express-validator";
 import IMonitorItem from "../models/IMonitorItem";
 import IMonitorRepository from "../models/IMonitorRepository";
 import { createRepository } from "../repository/MonitorRepository";
 import SchedulerService from "../services/SchedulerService";
+
 
 // export express routes that call controllers or services
 
