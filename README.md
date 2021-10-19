@@ -10,5 +10,8 @@
 - [x] save monitor history
 - [x] create email notification service (sendgrid)
 - [ ] create sms notification service (twilio)
-- [ ] create custom error types
+- [ ] create custom service error types and route responses
 - [ ] schedule monitoring in worker threads?
+
+
+- [ ] create helm chart

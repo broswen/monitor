@@ -14,9 +14,11 @@ export function createRepository(type: MonitorRepositoryType): IMonitorRepositor
       repository = new MongoMonitorRepository()
       break
     case "memory":
+      // uses in memory datastructures for testing
       repository = new MemoryMonitorRepository()
       break
     case "postgres":
+      // TODO: setup repository for postgres
       throw new Error("Method not implemented.");
       break
     default:
