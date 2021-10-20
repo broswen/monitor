@@ -1,6 +1,6 @@
 "use strict";
 
-import IMonitorRepository from "../models/IMonitorRepository";
+import IMonitorRepository from "../repository/IMonitorRepository";
 import MemoryMonitorRepository from "./MemoryMonitorRepository";
 import MongoMonitorRepository from "./MongoMonitorRepository";
 

@@ -4,8 +4,9 @@ import IMonitorItem from "../models/IMonitorItem";
 import { CronCommand, CronJob } from "cron";
 import axios, { Axios, AxiosError, AxiosResponse, Method } from "axios"
 import IMonitorEvent from "../models/IMonitorEvent";
-import IMonitorRepository from "../models/IMonitorRepository";
+import IMonitorRepository from "../repository/IMonitorRepository";
 import IEmailNotificationService from "./IEmailNotificationService";
+import { Result } from "../models/Result";
 
 // schedules cron jobs to monitor monitoritems
 
@@ -77,32 +78,58 @@ export default class SchedulerService {
   }
 
   // schedule a function based on the MonitorItem config
-  scheduleMonitorItem(item: IMonitorItem) {
-    const job = new CronJob(item.schedule,
-      this.createMonitorFunction(item) as CronCommand, null, true)
+  scheduleMonitorItem(item: IMonitorItem): Result<boolean> {
+    const job = new CronJob(
+      item.schedule,
+      this.createMonitorFunction(item) as CronCommand,
+      null,
+      true
+    )
     this.scheduledItems.set(item.id, job)
+    return {
+      type: "success",
+      value: true
+    }
   }
 
   // schedule multiple items
-  scheduleMonitorItems(items: IMonitorItem[]) {
+  scheduleMonitorItems(items: IMonitorItem[]): Result<boolean> {
     for (let item of items) {
       this.scheduleMonitorItem(item)
+    }
+    return {
+      type: "success",
+      value: true
     }
   }
 
   // unschedule an item
-  unscheduleMonitorItem(id: string) {
+  unscheduleMonitorItem(id: string): Result<boolean> {
     const job = this.scheduledItems.get(id)
     if (job === undefined) {
-      throw new Error(`job not defined for: ${id}`)
+      const err = new Error(`job not defined for: ${id}`)
+      return {
+        type: "error",
+        error: err,
+        status: 500,
+        message: err.message
+      }
     }
     job.stop()
     this.scheduledItems.delete(id)
+    return {
+      type: "success",
+      value: true
+    }
   }
 
-  unscheduleAllItems() {
+  unscheduleAllItems(): Result<boolean> {
     for (let id of this.scheduledItems.keys()) {
       this.unscheduleMonitorItem(id)
+    }
+    return {
+      type: "success",
+      value: true
     }
   }
 }

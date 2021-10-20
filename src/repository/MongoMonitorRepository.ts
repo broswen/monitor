@@ -2,7 +2,8 @@
 
 import IMonitorEvent from "../models/IMonitorEvent";
 import IMonitorItem from "../models/IMonitorItem";
-import MonitorRepository from "../models/IMonitorRepository";
+import { Result } from "../models/Result";
+import MonitorRepository from "../repository/IMonitorRepository";
 
 
 export default class MongoMonitorRepository implements MonitorRepository {
@@ -10,25 +11,25 @@ export default class MongoMonitorRepository implements MonitorRepository {
 
   }
 
-  getMonitorItem(id: string): IMonitorItem {
+  getMonitorItem(id: string): Result<IMonitorItem> {
     throw new Error("Method not implemented.");
   }
-  deleteMonitorItem(id: string): IMonitorItem {
+  deleteMonitorItem(id: string): Result<IMonitorItem> {
     throw new Error("Method not implemented.");
   }
-  saveMonitorItem(item: IMonitorItem): IMonitorItem {
+  saveMonitorItem(item: IMonitorItem): Result<IMonitorItem> {
     throw new Error("Method not implemented.");
   }
-  getMonitorHistory(id: string): IMonitorEvent[] {
+  getMonitorHistory(id: string): Result<IMonitorEvent[]> {
     throw new Error("Method not implemented.");
   }
-  addMonitorHistoryEvent(item: IMonitorEvent): IMonitorEvent {
+  addMonitorHistoryEvent(item: IMonitorEvent): Result<IMonitorEvent> {
     throw new Error("Method not implemented.");
   }
-  getMonitorItems(limit: number, offset: number): IMonitorItem[] {
+  getMonitorItems(limit: number, offset: number): Result<IMonitorItem[]> {
     throw new Error("Method not implemented.");
   }
-  ping(): boolean {
+  ping(): Result<boolean> {
     throw new Error("Method not implemented.");
   }
 }

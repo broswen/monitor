@@ -1,13 +1,14 @@
 "use strict";
 
 import express from "express"
-import IMonitorRepository from "../models/IMonitorRepository";
+import IMonitorRepository from "../repository/IMonitorRepository";
 import { createRepository } from "../repository/MonitorRepository";
 import { createMonitorItem, deleteMonitorItem, getMonitorItem, getMonitorItemHistory, getMonitorItems, updateMonitorItem } from "../routes/routes";
 import SchedulerService from "../services/SchedulerService";
 import { body, param, validationResult } from 'express-validator';
 import IEmailNotificationService from "../services/IEmailNotificationService";
 import SendGridNotificationService from "../services/SendGridNotificationService";
+import { isError } from "../models/Result";
 
 const app: express.Application = express()
 
@@ -24,8 +25,16 @@ app.get("/healthz", (req: express.Request, res: express.Response) => {
 app.use(express.json())
 
 // schedule pre-existing items
-const existingItems = repository.getMonitorItems(100000000, 0)
-scheduler.scheduleMonitorItems(existingItems)
+const getItemsResult = repository.getMonitorItems(100000000, 0)
+if (isError(getItemsResult)) {
+  throw getItemsResult.error
+} else {
+  const scheduleResult = scheduler.scheduleMonitorItems(getItemsResult.value)
+  if (isError(scheduleResult)) {
+    throw scheduleResult.error
+  }
+}
+
 
 
 const validator = (req: express.Request, res: express.Response, next: express.NextFunction) => {
