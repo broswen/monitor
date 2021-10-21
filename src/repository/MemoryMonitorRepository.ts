@@ -1,20 +1,21 @@
 "use strict";
 
-import IMonitorEvent from "../models/IMonitorEvent";
-import IMonitorItem from "../models/IMonitorItem";
+import { ObjectId } from "bson";
+import MonitorEvent from "../models/MonitorEvent";
+import MonitorItem from "../models/MonitorItem";
 import { Result } from "../models/Result";
 import MonitorRepository from "./IMonitorRepository";
 
 
 export default class MemoryMonitorRepository implements MonitorRepository {
-  items: Map<string, IMonitorItem>
-  history: Map<string, IMonitorEvent[]>
+  items: Map<string, MonitorItem>
+  history: Map<string, MonitorEvent[]>
   constructor() {
     this.items = new Map()
     this.history = new Map()
   }
 
-  getMonitorItem(id: string): Result<IMonitorItem> {
+  async getMonitorItem(id: string): Promise<Result<MonitorItem>> {
     const item = this.items.get(id)
     if (item === undefined) {
       const err = new Error("item not found")
@@ -31,8 +32,8 @@ export default class MemoryMonitorRepository implements MonitorRepository {
     }
   }
 
-  deleteMonitorItem(id: string): Result<IMonitorItem> {
-    const item = this.getMonitorItem(id)
+  async deleteMonitorItem(id: string): Promise<Result<string>> {
+    const item = await this.getMonitorItem(id)
     if (item.type === "error") {
       return item
     }
@@ -40,14 +41,15 @@ export default class MemoryMonitorRepository implements MonitorRepository {
     this.history.delete(id)
     return {
       type: "success",
-      value: item.value
+      value: id
     }
   }
 
-  saveMonitorItem(item: IMonitorItem): Result<IMonitorItem> {
-    this.items.set(item.id, item)
-    if (this.history.get(item.id) === undefined) {
-      this.history.set(item.id, [])
+  async saveMonitorItem(item: MonitorItem): Promise<Result<MonitorItem>> {
+    item._id = new ObjectId;
+    this.items.set(item._id.toString(), item)
+    if (this.history.get(item._id.toString()) === undefined) {
+      this.history.set(item._id.toString(), [])
     }
     return {
       type: "success",
@@ -55,8 +57,8 @@ export default class MemoryMonitorRepository implements MonitorRepository {
     }
   }
 
-  getMonitorHistory(id: string): Result<IMonitorEvent[]> {
-    const item = this.getMonitorItem(id)
+  async getMonitorHistory(id: string): Promise<Result<MonitorEvent[]>> {
+    const item = await this.getMonitorItem(id)
     if (item.type === "error") {
       return item
     }
@@ -76,22 +78,22 @@ export default class MemoryMonitorRepository implements MonitorRepository {
     }
   }
 
-  addMonitorHistoryEvent(item: IMonitorEvent): Result<IMonitorEvent> {
-    this.history.get(item.itemId)?.push(item)
+  async addMonitorHistoryEvent(item: MonitorEvent): Promise<Result<MonitorEvent>> {
+    this.history.get(item.itemId.toString())?.push(item)
     return {
       type: "success",
       value: item
     }
   }
 
-  getMonitorItems(limit: number, offset: number): Result<IMonitorItem[]> {
+  async getMonitorItems(limit: number, offset: number): Promise<Result<MonitorItem[]>> {
     return {
       type: "success",
       value: Array.from(this.items.values()).slice(offset, limit)
     }
   }
 
-  ping(): Result<boolean> {
+  async ping(): Promise<Result<boolean>> {
     return {
       type: "success",
       value: true

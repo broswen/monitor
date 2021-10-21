@@ -1,11 +1,16 @@
 "use strict";
 import * as dotenv from "dotenv"
+import Server from "./server/server";
 dotenv.config();
 
+async function main() {
+  const server: Server = new Server()
 
-import config from "./config/config"
-import app from "./server/server"
+  server.setRoutes()
 
-app.listen(config.port, () => {
-  console.log(`listening on http://localhost:${config.port}`)
-})
+  server.start()
+}
+
+
+
+main()

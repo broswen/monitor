@@ -1,7 +1,6 @@
 "use strict";
 
-import IMonitorItem from "../models/IMonitorItem";
-import IMonitorEvent from "../models/IMonitorEvent";
+import MonitorEvent from "../models/MonitorEvent";
 import IEmailNotificationService from "./IEmailNotificationService";
 
 import sgMail from "@sendgrid/mail"
@@ -14,7 +13,7 @@ export default class SendGridNotificationService implements IEmailNotificationSe
     sgMail.setApiKey(config.sendgrid_api_key)
   }
 
-  async sendNotification(emails: string[], event: IMonitorEvent): Promise<Result<boolean>> {
+  async sendNotification(emails: string[], event: MonitorEvent): Promise<Result<boolean>> {
     const msg = {
       to: emails,
       from: config.noreply_email,

@@ -1,6 +1,6 @@
 "use strict";
 
-import IMonitorEvent from "../models/IMonitorEvent";
+import MonitorEvent from "../models/MonitorEvent";
 import { Result } from "../models/Result";
 import ISmsNotificationService from "./ISmsNotificationService";
 
@@ -10,7 +10,7 @@ export default class TwilioNotificationService implements ISmsNotificationServic
 
   }
 
-  async sendNotification(phoneNumbers: string[], event: IMonitorEvent): Promise<Result<boolean>> {
+  async sendNotification(phoneNumbers: string[], event: MonitorEvent): Promise<Result<boolean>> {
     return {
       type: "success",
       value: true

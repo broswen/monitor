@@ -1,8 +1,8 @@
 "use strict";
 
-import IMonitorEvent from "../models/IMonitorEvent";
+import MonitorEvent from "../models/MonitorEvent";
 import { Result } from "../models/Result";
 
 export default interface IEmailNotificationService {
-  sendNotification(emails: string[], event: IMonitorEvent): Promise<Result<boolean>>
+  sendNotification(emails: string[], event: MonitorEvent): Promise<Result<boolean>>
 }

@@ -1,15 +1,15 @@
 "use strict";
 
-import IMonitorEvent from "../models/IMonitorEvent";
-import MonitorItem from "../models/IMonitorItem";
+import MonitorEvent from "../models/MonitorEvent";
+import MonitorItem from "../models/MonitorItem";
 import { Result } from "../models/Result";
 
 export default interface IMonitorRepository {
-  getMonitorItem(id: string): Result<MonitorItem>
-  deleteMonitorItem(id: string): Result<MonitorItem>
-  saveMonitorItem(item: MonitorItem): Result<MonitorItem>
-  getMonitorHistory(id: string): Result<IMonitorEvent[]>
-  addMonitorHistoryEvent(item: IMonitorEvent): Result<IMonitorEvent>
-  getMonitorItems(limit: number, offset: number): Result<MonitorItem[]>
-  ping(): Result<boolean>
+  getMonitorItem(id: string): Promise<Result<MonitorItem>>
+  deleteMonitorItem(id: string): Promise<Result<string>>
+  saveMonitorItem(item: MonitorItem): Promise<Result<MonitorItem>>
+  getMonitorHistory(id: string): Promise<Result<MonitorEvent[]>>
+  addMonitorHistoryEvent(item: MonitorEvent): Promise<Result<MonitorEvent>>
+  getMonitorItems(limit: number, offset: number): Promise<Result<MonitorItem[]>>
+  ping(): Promise<Result<boolean>>
 }

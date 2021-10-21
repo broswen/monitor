@@ -9,33 +9,99 @@ import { body, param, validationResult } from 'express-validator';
 import IEmailNotificationService from "../services/IEmailNotificationService";
 import SendGridNotificationService from "../services/SendGridNotificationService";
 import { isError } from "../models/Result";
+import config from "../config/config";
 
-const app: express.Application = express()
+export default class Server {
 
-const repository: IMonitorRepository = createRepository("memory")
-const emailNotifier: IEmailNotificationService = new SendGridNotificationService()
-const scheduler: SchedulerService = new SchedulerService(repository, emailNotifier)
+  app: express.Application
+  repository: IMonitorRepository
+  emailNotifier: IEmailNotificationService
+  scheduler: SchedulerService
 
-// health check, ping database to check connection
-app.get("/healthz", (req: express.Request, res: express.Response) => {
-  repository.ping()
-  res.send('OK')
-})
+  constructor() {
+    this.app = express()
+    this.app.use(express.json())
+    this.repository = createRepository("mongodb")
 
-app.use(express.json())
-
-// schedule pre-existing items
-const getItemsResult = repository.getMonitorItems(100000000, 0)
-if (isError(getItemsResult)) {
-  throw getItemsResult.error
-} else {
-  const scheduleResult = scheduler.scheduleMonitorItems(getItemsResult.value)
-  if (isError(scheduleResult)) {
-    throw scheduleResult.error
+    this.emailNotifier = new SendGridNotificationService()
+    this.scheduler = new SchedulerService(this.repository, this.emailNotifier)
   }
+
+  setRoutes() {
+    this.app.get("/healthz", (req: express.Request, res: express.Response) => {
+      res.send('OK')
+    })
+
+    this.app.post(
+      "/item",
+      body("endpoint").isURL(),
+      body("method").isString().isLength({ min: 1 }),
+      body("schedule").isString().isLength({ min: 9 }),
+      body("timeout").isInt({ min: 1 }),
+      body("emailAlert").isBoolean(),
+      body("smsAlert").isBoolean(),
+      body("emails").isArray(),
+      body("phoneNumbers").isArray(),
+      validator,
+      createMonitorItem(this.repository, this.scheduler)
+    )
+
+    this.app.get(
+      "/item/:id",
+      param("id").isString().isLength({ min: 1 }),
+      validator,
+      getMonitorItem(this.repository)
+    )
+
+    this.app.put("/item/:id",
+      body("endpoint").isURL(),
+      body("method").isString().isLength({ min: 1 }),
+      body("schedule").isString().isLength({ min: 9 }),
+      body("timeout").isInt({ min: 1 }),
+      body("emailAlert").isBoolean(),
+      body("smsAlert").isBoolean(),
+      body("emails").isArray(),
+      body("phoneNumbers").isArray(),
+      param("id").isString().isLength({ min: 1 }),
+      validator,
+      updateMonitorItem(this.repository, this.scheduler)
+    )
+
+    this.app.delete(
+      "/item/:id",
+      param("id").isString().isLength({ min: 1 }),
+      validator,
+      deleteMonitorItem(this.repository, this.scheduler)
+    )
+
+    this.app.get(
+      "/item/:id/history",
+      param("id").isString().isLength({ min: 1 }),
+      validator,
+      getMonitorItemHistory(this.repository)
+    )
+
+    this.app.get("/item", getMonitorItems(this.repository))
+  }
+
+  async start() {
+
+    const getItemsResult = await this.repository.getMonitorItems(100000000, 0)
+    if (isError(getItemsResult)) {
+      throw getItemsResult.error
+    } else {
+      const scheduleResult = await this.scheduler.scheduleMonitorItems(getItemsResult.value)
+      if (isError(scheduleResult)) {
+        throw scheduleResult.error
+      }
+    }
+
+    this.app.listen(config.port, () => {
+      console.log(`listening on http://localhost:${config.port}`)
+    })
+  }
+
 }
-
-
 
 const validator = (req: express.Request, res: express.Response, next: express.NextFunction) => {
   const errors = validationResult(req);
@@ -44,58 +110,3 @@ const validator = (req: express.Request, res: express.Response, next: express.Ne
   }
   next()
 }
-
-// set routes
-app.post(
-  "/item",
-  body("endpoint").isURL(),
-  body("method").isString().isLength({ min: 1 }),
-  body("schedule").isString().isLength({ min: 9 }),
-  body("timeout").isInt({ min: 1 }),
-  body("emailAlert").isBoolean(),
-  body("smsAlert").isBoolean(),
-  body("emails").isArray(),
-  body("phoneNumbers").isArray(),
-  validator,
-  createMonitorItem(repository, scheduler)
-)
-
-app.get(
-  "/item/:id",
-  param("id").isString().isLength({ min: 1 }),
-  validator,
-  getMonitorItem(repository)
-)
-
-app.put("/item/:id",
-  body("endpoint").isURL(),
-  body("method").isString().isLength({ min: 1 }),
-  body("schedule").isString().isLength({ min: 9 }),
-  body("timeout").isInt({ min: 1 }),
-  body("emailAlert").isBoolean(),
-  body("smsAlert").isBoolean(),
-  body("emails").isArray(),
-  body("phoneNumbers").isArray(),
-  param("id").isString().isLength({ min: 1 }),
-  validator,
-  updateMonitorItem(repository, scheduler)
-)
-
-app.delete(
-  "/item/:id",
-  param("id").isString().isLength({ min: 1 }),
-  validator,
-  deleteMonitorItem(repository, scheduler)
-)
-
-app.get(
-  "/item/:id/history",
-  param("id").isString().isLength({ min: 1 }),
-  validator,
-  getMonitorItemHistory(repository)
-)
-
-app.get("/item", getMonitorItems(repository))
-
-
-export default app

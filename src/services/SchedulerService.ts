@@ -1,9 +1,9 @@
 "use strict";
 
-import IMonitorItem from "../models/IMonitorItem";
+import MonitorItem from "../models/MonitorItem";
 import { CronCommand, CronJob } from "cron";
 import axios, { Axios, AxiosError, AxiosResponse, Method } from "axios"
-import IMonitorEvent from "../models/IMonitorEvent";
+import MonitorEvent from "../models/MonitorEvent";
 import IMonitorRepository from "../repository/IMonitorRepository";
 import IEmailNotificationService from "./IEmailNotificationService";
 import { Result } from "../models/Result";
@@ -21,11 +21,14 @@ export default class SchedulerService {
     this.emailNotifier = emailNotifier
   }
 
-  createMonitorFunction(item: IMonitorItem): Function {
+  createMonitorFunction(item: MonitorItem): Function {
     return async () => {
+      if (item._id === undefined) {
+        throw new Error("item id is undefined")
+      }
       let response: AxiosResponse
       const now = new Date()
-      let monitorHistoryItem: IMonitorEvent = { id: "", itemId: item.id, timestamp: now, endpoint: item.endpoint, method: item.method, status: 0, statusText: "", failure: false }
+      let monitorHistoryItem: MonitorEvent = { itemId: item._id, timestamp: now, endpoint: item.endpoint, method: item.method, status: 0, statusText: "", failure: false }
       try {
         response = await axios.request({
           url: item.endpoint,
@@ -78,14 +81,17 @@ export default class SchedulerService {
   }
 
   // schedule a function based on the MonitorItem config
-  scheduleMonitorItem(item: IMonitorItem): Result<boolean> {
+  scheduleMonitorItem(item: MonitorItem): Result<boolean> {
+    if (item._id === undefined) {
+      throw new Error("item id is undefined")
+    }
     const job = new CronJob(
       item.schedule,
       this.createMonitorFunction(item) as CronCommand,
       null,
       true
     )
-    this.scheduledItems.set(item.id, job)
+    this.scheduledItems.set(item._id.toString(), job)
     return {
       type: "success",
       value: true
@@ -93,7 +99,7 @@ export default class SchedulerService {
   }
 
   // schedule multiple items
-  scheduleMonitorItems(items: IMonitorItem[]): Result<boolean> {
+  scheduleMonitorItems(items: MonitorItem[]): Result<boolean> {
     for (let item of items) {
       this.scheduleMonitorItem(item)
     }
