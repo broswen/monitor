@@ -57,12 +57,12 @@ export default class MemoryMonitorRepository implements MonitorRepository {
     }
   }
 
-  async getMonitorHistory(id: string): Promise<Result<MonitorEvent[]>> {
+  async getMonitorHistory(id: string, limit: number, offset: number): Promise<Result<MonitorEvent[]>> {
     const item = await this.getMonitorItem(id)
     if (item.type === "error") {
       return item
     }
-    const history = this.history.get(id)
+    const history = this.history.get(id)?.slice(offset, limit)
     if (history === undefined) {
       const err = new Error("history not found")
       return {

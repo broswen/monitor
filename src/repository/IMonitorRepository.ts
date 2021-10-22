@@ -8,7 +8,7 @@ export default interface IMonitorRepository {
   getMonitorItem(id: string): Promise<Result<MonitorItem>>
   deleteMonitorItem(id: string): Promise<Result<string>>
   saveMonitorItem(item: MonitorItem): Promise<Result<MonitorItem>>
-  getMonitorHistory(id: string): Promise<Result<MonitorEvent[]>>
+  getMonitorHistory(id: string, limit: number, offset: number): Promise<Result<MonitorEvent[]>>
   addMonitorHistoryEvent(item: MonitorEvent): Promise<Result<MonitorEvent>>
   getMonitorItems(limit: number, offset: number): Promise<Result<MonitorItem[]>>
   ping(): Promise<Result<boolean>>

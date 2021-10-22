@@ -5,8 +5,6 @@ dotenv.config();
 
 async function main() {
   const server: Server = new Server()
-
-
   server.start()
 }
 

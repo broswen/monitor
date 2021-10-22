@@ -23,10 +23,10 @@ export default class Server {
     this.app.use(express.json())
     this.repository = createRepository("mongodb")
 
-    this.setRoutes()
-
     this.emailNotifier = new SendGridNotificationService()
     this.scheduler = new SchedulerService(this.repository, this.emailNotifier)
+
+    this.setRoutes()
   }
 
   setRoutes() {

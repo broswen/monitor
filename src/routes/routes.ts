@@ -60,7 +60,11 @@ export function getMonitorItem(repository: IMonitorRepository) {
 export function getMonitorItemHistory(repository: IMonitorRepository) {
   return async (req: express.Request, res: express.Response) => {
     const id: string = req.params["id"]
-    const getHistoryResult = await repository.getMonitorHistory(id)
+    const limit = req.query.limit as string ?? "100"
+    const offset = req.query.offset as string ?? "0"
+    const limitValue: number = parseInt(limit)
+    const offsetValue: number = parseInt(offset)
+    const getHistoryResult = await repository.getMonitorHistory(id, limitValue, offsetValue)
     if (isError(getHistoryResult)) {
       res.status(getHistoryResult.status).json({ message: getHistoryResult.message })
     } else {

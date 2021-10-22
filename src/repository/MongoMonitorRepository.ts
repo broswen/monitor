@@ -92,10 +92,10 @@ export default class MongoMonitorRepository implements MonitorRepository {
       value: item
     }
   }
-  async getMonitorHistory(id: string): Promise<Result<MonitorEvent[]>> {
+  async getMonitorHistory(id: string, limit: number, offset: number): Promise<Result<MonitorEvent[]>> {
     let events: MonitorEvent[]
     try {
-      events = (await this.events.find({ itemId: new ObjectId(id) }).toArray()) as MonitorEvent[]
+      events = (await this.events.find({ itemId: new ObjectId(id) }).skip(offset).limit(limit).sort({ timestamp: -1 }).toArray()) as MonitorEvent[]
     } catch (error) {
       const err = error as Error
       return {
@@ -133,7 +133,7 @@ export default class MongoMonitorRepository implements MonitorRepository {
   async getMonitorItems(limit: number, offset: number): Promise<Result<MonitorItem[]>> {
     let items: MonitorItem[]
     try {
-      items = (await this.items.find().toArray()) as MonitorItem[]
+      items = (await this.items.find().skip(offset).limit(limit).sort({ _id: -1 }).toArray()) as MonitorItem[]
     } catch (error) {
       const err = error as Error
       return {

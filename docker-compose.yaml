@@ -1,0 +1,24 @@
+version: "3.9"
+services:
+  backend:
+    build: .
+    environment:
+      PORT: 8080
+      DB_URL: mongo
+      DB_PORT: 27017
+      DB_USER: admin
+      DB_PASSWORD: password
+      DB_NAME: monitor
+      DB_COL_ITEMS: monitor_items
+      DB_COL_EVENTS: monitor_events
+      SENDGRID_API_KEY: abc123
+      NOREPLY_REMAIL: noreply@broswen.com
+    ports:
+      - "8080:8080"
+  mongo:
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    ports:
+      - "27017:27017"
